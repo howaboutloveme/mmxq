@@ -5,9 +5,15 @@
     <meta charset="UTF-8">
     <title>我的世界MC荣耀网站</title>
     <style>
- canvas {
-    display: block;
- }
+        .sakura {
+            position: absolute;
+            pointer-events: none; /* 防止鼠标事件影响樱花 */
+            animation: fall linear infinite; /* 定义动画效果 */
+        }
+        @keyframes fall {
+            from { transform: translateY(-10%) }
+            to { transform: translateY(110vh) }
+        }
 		.lj
 		{
 			color: skyblue;
@@ -41,6 +47,7 @@
 font-size: 25px
 		}
 body {
+overflow: hidden; /* 防止内容超出视口 */
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
