@@ -194,7 +194,130 @@ Your browser does not support the audio element.
 	  
 	  <!--樱花-->
 	
-
+  </script>
+  <!-- effects -->
+  <script id="fx_common_vsh" type="x-shader/x_vertex">
+  uniform vec3 uResolution;
+  attribute vec2 aPosition;
+  
+  varying vec2 texCoord;
+  varying vec2 screenCoord;
+  
+  void main(void) {
+      gl_Position = vec4(aPosition, 0.0, 1.0);
+      texCoord = aPosition.xy * 0.5 + vec2(0.5, 0.5);
+      screenCoord = aPosition.xy * vec2(uResolution.z, 1.0);
+  }
+  </script>
+  <script id="bg_fsh" type="x-shader/x_fragment">
+  #ifdef GL_ES
+  //precision mediump float;
+  precision highp float;
+  #endif
+  
+  uniform vec2 uTimes;
+  
+  varying vec2 texCoord;
+  varying vec2 screenCoord;
+  
+  void main(void) {
+      vec3 col;
+      float c;
+      vec2 tmpv = texCoord * vec2(0.8, 1.0) - vec2(0.95, 1.0);
+      c = exp(-pow(length(tmpv) * 1.8, 2.0));
+      col = mix(vec3(0.02, 0.0, 0.03), vec3(0.96, 0.98, 1.0) * 1.5, c);
+      gl_FragColor = vec4(col * 0.5, 1.0);
+  }
+  </script>
+  <script id="fx_brightbuf_fsh" type="x-shader/x_fragment">
+  #ifdef GL_ES
+  //precision mediump float;
+  precision highp float;
+  #endif
+  uniform sampler2D uSrc;
+  uniform vec2 uDelta;
+  
+  varying vec2 texCoord;
+  varying vec2 screenCoord;
+  
+  void main(void) {
+      vec4 col = texture2D(uSrc, texCoord);
+      gl_FragColor = vec4(col.rgb * 2.0 - vec3(0.5), 1.0);
+  }
+  </script>
+  <script id="fx_dirblur_r4_fsh" type="x-shader/x_fragment">
+  #ifdef GL_ES
+  //precision mediump float;
+  precision highp float;
+  #endif
+  uniform sampler2D uSrc;
+  uniform vec2 uDelta;
+  uniform vec4 uBlurDir; //dir(x, y), stride(z, w)
+  
+  varying vec2 texCoord;
+  varying vec2 screenCoord;
+  
+  void main(void) {
+      vec4 col = texture2D(uSrc, texCoord);
+      col = col + texture2D(uSrc, texCoord + uBlurDir.xy * uDelta);
+      col = col + texture2D(uSrc, texCoord - uBlurDir.xy * uDelta);
+      col = col + texture2D(uSrc, texCoord + (uBlurDir.xy + uBlurDir.zw) * uDelta);
+      col = col + texture2D(uSrc, texCoord - (uBlurDir.xy + uBlurDir.zw) * uDelta);
+      gl_FragColor = col / 5.0;
+  }
+  </script>
+  <!-- effect fragment shader template -->
+  <script id="fx_common_fsh" type="x-shader/x_fragment">
+  #ifdef GL_ES
+  //precision mediump float;
+  precision highp float;
+  #endif
+  uniform sampler2D uSrc;
+  uniform vec2 uDelta;
+  
+  varying vec2 texCoord;
+  varying vec2 screenCoord;
+  
+  void main(void) {
+      gl_FragColor = texture2D(uSrc, texCoord);
+  }
+  </script>
+  <!-- post processing -->
+  <script id="pp_final_vsh" type="x-shader/x_vertex">
+  uniform vec3 uResolution;
+  attribute vec2 aPosition;
+  varying vec2 texCoord;
+  varying vec2 screenCoord;
+  void main(void) {
+      gl_Position = vec4(aPosition, 0.0, 1.0);
+      texCoord = aPosition.xy * 0.5 + vec2(0.5, 0.5);
+      screenCoord = aPosition.xy * vec2(uResolution.z, 1.0);
+  }
+  </script>
+  <script id="pp_final_fsh" type="x-shader/x_fragment">
+  #ifdef GL_ES
+  //precision mediump float;
+  precision highp float;
+  #endif
+  uniform sampler2D uSrc;
+  uniform sampler2D uBloom;
+  uniform vec2 uDelta;
+  varying vec2 texCoord;
+  varying vec2 screenCoord;
+  void main(void) {
+      vec4 srccol = texture2D(uSrc, texCoord) * 2.0;
+      vec4 bloomcol = texture2D(uBloom, texCoord);
+      vec4 col;
+      col = srccol + bloomcol * (vec4(1.0) + srccol);
+      col *= smoothstep(1.0, 0.0, pow(length((texCoord - vec2(0.5)) * 2.0), 1.2) * 0.5);
+      col = pow(col, vec4(0.45454545454545)); //(1.0 / 2.2)
+      
+      gl_FragColor = vec4(col.rgb, 1.0);
+      gl_FragColor.a = 1.0;
+  }
+  </script>
+  <!-- partial -->
+  <script  src="sakura.js"></script>
 
 </center>
 </body>
