@@ -4,8 +4,10 @@ h1 {
         position: relative;
         float: left;
         color: white;
-        font-family: 'Inconsolata', Consolas, monospace;
-        font-size: 10px;
+            background: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
         
 }
 h1 span{
