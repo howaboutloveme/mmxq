@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>樱花飘落</title>
+<style>
+ body {
+    margin: 0;
+    overflow: hidden;
+ }
+ canvas {
+    display: block;
+ }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+ // 获取canvas元素和上下文
+ const canvas = document.getElementById('canvas');
+ const ctx = canvas.getContext('2d');
+
+ // 设置canvas大小
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight;
+
+ // 樱花花瓣的颜色
+ const petalColor = 'rgba(255, 192, 203, 0.5)';
+
+ // 樱花花瓣的数量
+ const numPettals = 100;
+
+ // 樱花花瓣的大小
+ const petalSize = 10;
+
+ // 樱花花瓣的初始位置
+ let pettals = [];
+ for (let i = 0; i < numPettals; i++) {
+    pettals.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: petalSize,
+      angle: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.1 + 0.05,
+      alpha: Math.random() * 0.5 + 0.2
+    });
+ }
+
+ // 绘制樱花花瓣
+ function drawPetal(petal) {
+    ctx.save();
+    ctx.translate(petal.x, petal.y);
+    ctx.rotate(petal.angle);
+    ctx.beginPath();
+    ctx.moveTo(-petal.size / 2, 0);
+    ctx.lineTo(0, -petal.size / 2);
+    ctx.lineTo(petal.size / 2, 0);
+    ctx.closePath();
+    ctx.fillStyle = petalColor;
+    ctx.globalAlpha = petal.alpha;
+    ctx.fill();
+    ctx.restore();
+ }
+
+ // 更新和绘制樱花花瓣
+ function updateAndDraw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pettals.forEach(petal => {
+      petal.x -= petal.speed;
+      petal.y += petal.speed * 0.5;
+      petal.angle += 0.01;
+      petal.alpha -= 0.005;
+      if (petal.alpha <= 0) return;
+      drawPetal(petal);
+    });
+    requestAnimationFrame(updateAndDraw);
+ }
+
+ // 开始动画
+ updateAndDraw();
+</script>
+</body>
+</html>
